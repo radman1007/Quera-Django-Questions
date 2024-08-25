@@ -1,12 +1,11 @@
 from . import models
 
-
-
 def young_employees(job: str):
     query = models.Employee.objects.filter(age__lt=30).filter(job=job)
 
 def cheap_products():
-    average_price = ;
+    products = models.Product.objects.all()
+    average_price = sum(item.price for item in products) // len(products)
     query = models.Product.objects.filter(price__gt=average_price)
 
 
