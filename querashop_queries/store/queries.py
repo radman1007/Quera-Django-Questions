@@ -10,11 +10,11 @@ def cheap_products():
 
 
 def products_sold_by_companies():
-    pass
+    models.Company.objects.all()
 
 
 def sum_of_income(start_date: str, end_date: str):
-    pass
+    query = models.Order.objects.filter(time__range=[start_date, end_date])
 
 
 def good_customers():
