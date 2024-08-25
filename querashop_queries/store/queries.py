@@ -10,7 +10,7 @@ def cheap_products():
 
 
 def products_sold_by_companies():
-    models.Company.objects.all()
+    pass
 
 
 def sum_of_income(start_date: str, end_date: str):
