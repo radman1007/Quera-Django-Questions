@@ -10,3 +10,4 @@ class TestTasks(TestCase):
         solution = 61160
         answer = queries.sum_of_income("2023-07-01", "2023-07-30")
         self.assertEqual(solution, answer)
+        queries.good_customers()
