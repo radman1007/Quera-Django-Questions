@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +11,7 @@
       <div class='wave -one'></div>
       <div class='wave -two'></div>
       <div class='wave -three'></div>
-      <div class='title'>{{ postal_card_text }}</div>
+      <div class='title'>{{ postal_card_text|translate_number }}</div>
     </div>
 </body>
 </html>
