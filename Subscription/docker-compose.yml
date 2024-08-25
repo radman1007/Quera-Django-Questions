@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    tty: true
+    command: celery -A config worker -n quera -l INFO
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
+    depends_on:
+      - redis
+  redis:
+    image: 'redis:alpine'
+    volumes:
+      - redis_data:/data
+volumes:
+  redis_data:

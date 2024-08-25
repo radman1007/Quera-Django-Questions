@@ -1,0 +1,18 @@
+body {
+    font-family: Georgia, serif;
+    color: #333;
+    font-size: 1.4rem;
+    line-height: 2rem;
+}
+
+
+h1 {
+    font-size: 2.6rem;
+    line-height: 2.6rem;
+}
+
+.content {
+    margin: 0 auto;
+    max-width: 90%;
+    width: 720px;
+}
