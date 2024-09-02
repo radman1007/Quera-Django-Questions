@@ -16,7 +16,7 @@ class CustomUserForm(forms.ModelForm):
             raise ValidationError('national code must be 10 character')
         
     def clean_fullname(self):
-        fullname = self.cleaned_data.get('fullname')
+        fullname = self.cleaned_data.get('full_name')
         parts = fullname.split(' ')
         if len(parts) != 2:
             raise ValidationError('you must use space in fullname')

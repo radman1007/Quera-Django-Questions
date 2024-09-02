@@ -10,7 +10,7 @@ class Company(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=50)
-    company = models.ForeignKey(Company, related_name='products', on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
     price = models.PositiveIntegerField()
     amount = models.PositiveSmallIntegerField(
         validators=[
