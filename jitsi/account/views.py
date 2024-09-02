@@ -1,15 +1,15 @@
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, redirect
 from .forms import SignUpForm, LoginForm, TeamForm
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from .models import User, Team
 from django.contrib.auth.decorators import login_required
 
 @require_http_methods(["GET"])
 def home(request):
     if request.user.is_authenticated:
-        if request.user.team: 
-            team = request.user.team.name
+        if request.user.account.team: 
+            team = request.user.account.team.name
         else:
             team = None
         context = {
@@ -32,11 +32,15 @@ def signup(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
-            login(request, form.username, backend='django.contrib.auth.backends.ModelBackend')
-            redirect('team')
+            user = form.save()
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            return redirect('team')
         else:
-            redirect('signup')
+            context = {
+                 'form' : form,
+                 'errors' : form.errors,
+            }
+            return render(request, 'signup.html', context)
             
 
 @require_http_methods(["GET", "POST"])
@@ -50,27 +54,28 @@ def login_account(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            user = User.objects.filter(username=form.username).first()
+            user = User.objects.filter(username=form.cleaned_data['username']).first()
             if user == None:
                 return redirect('login')
-            user = authenticate(username=user, password=form.password)
+            user = authenticate(username=user, password=form.cleaned_data['password'])
             if user is not None:
                 login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-                redirect('home')
+                return redirect('home')
             else:
-                redirect('login')
+                return redirect('login')
         else:
-            redirect('login')
+            return redirect('login')
 
+@require_http_methods(["GET"])
 def logout_account(request):
-    pass
-
+    logout(request)
+    return redirect('login')
 
 @login_required
 @require_http_methods(["GET", "POST"])
 def joinoradd_team(request):
     if request.method == "GET":
-        if request.user.team:
+        if request.user.account.team:
             return redirect('home')
         context = {
             'form' : TeamForm(),
@@ -80,26 +85,20 @@ def joinoradd_team(request):
     if request.method == "POST":
         form = TeamForm(request.POST)
         if form.is_valid():
-            team = Team.objects.filter(name=form.name).first()
-            if team == None:
-                new_form = form.save(commit=False)
-                new_form.jitsi_url_path = f'http://meet.jit.si/{new_form.name}'
-                new_form.save()
-                request.user.team = new_form
-                request.user.save()
-                return redirect('home')
-            else:
-                request.user.team = team
-                request.user.save()
-                return redirect('home')
+            team_name = form.cleaned_data['name']
+            jitsi_url_path = f"http://meet.jit.si/{team_name}"
+            team, created = Team.objects.get_or_create(name=team_name, defaults={'jitsi_url_path': jitsi_url_path})
+            request.user.account.team = team
+            request.user.account.save()
+            return redirect('home')
         else:
             return redirect('home')
 
 @login_required
 @require_http_methods(["GET"])
 def exit_team(request):
-    if request.user.team:
-        request.user.team = None
-        request.user.save()
+    if request.user.account.team:
+        request.user.account.team = None
+        request.user.account.save()
     return redirect('home')
     
